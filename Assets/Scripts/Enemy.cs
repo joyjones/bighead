@@ -9,12 +9,14 @@ namespace AssemblyCSharp
 		{
 		}
 
-		protected override void Logic() {
-		}
+		protected override void Logic()
+        {
+            base.Logic();
+        }
 
-		protected override void ShowHit(bool hit) {
+		protected override void ShowHit(bool hit)
+        {
 			base.ShowHit (hit);
 		}
 	}
 }
-

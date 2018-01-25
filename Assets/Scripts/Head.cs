@@ -1,22 +1,23 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace AssemblyCSharp
 {
 	public class Head : MonoBehaviour
 	{
-		
 		public Role ParentRole
 		{
 			get;
 			private set;
 		}
 
-		public bool IsColliding
+		public Role[] CollidingRoles
 		{
-			get;
-			private set;
+			get { return collidingRoles.ToArray(); }
 		}
+
+		private List<Role> collidingRoles = new List<Role>();
 
 		// Use this for initialization
 		void Start ()
@@ -29,28 +30,39 @@ namespace AssemblyCSharp
 		// Update is called once per frame
 		void Update ()
 		{
-		
 		}
 
 		void OnTriggerEnter(Collider collider)
 		{
 			if (collider.gameObject.name == "Head")
 			{
-				IsColliding = true;
-				if (ParentRole.IsHitting)
+				var p = collider.gameObject.transform.parent;
+				if (p != null)
 				{
-					var enemy = collider.gameObject.transform.parent.gameObject.GetComponentInChildren<Enemy> ();
-					enemy.HitBody (this.name);
+					var role = p.gameObject.GetComponentInChildren<Role> ();
+					if (role != null && !collidingRoles.Contains (role))
+					{
+						collidingRoles.Add(role);
+						if (ParentRole.IsHitting)
+							role.HitBody (ParentRole);
+					}
 				}
 			}
 		}
 
-		void OnTriggerExit(Collider collider) {
-			IsColliding = false;
+		void OnTriggerExit(Collider collider)
+		{
+			var p = collider.gameObject.transform.parent;
+			if (p != null)
+			{
+				var role = p.gameObject.GetComponentInChildren<Role>();
+				if (role != null)
+					collidingRoles.Remove(role);
+			}
 		}
 
-		void OnTriggerStay(Collider collider) {
-			//		Debug.Log("接触持续中");
+		void OnTriggerStay(Collider collider)
+		{
 		}
 	}
 }
